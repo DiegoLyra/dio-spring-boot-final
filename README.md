@@ -1,85 +1,52 @@
-# DIO Spring Boot - Final Project 05: Spring AI (budgeting)
+# Budgeting API — Gestão Financeira Inteligente com Spring AI
 
-## Introduction
+Projeto desenvolvido como Desafio de Projeto do módulo de **Spring AI** no bootcamp/trilha de Spring Boot da **Digital Innovation One (DIO)**.
 
-This final module applies Spring AI in a budgeting API while preserving the same layered architecture used across the track.
+A aplicação é uma API REST de gestão financeira pessoal que utiliza capacidades de **Inteligência Artificial Generativa** (Spring AI + OpenAI) para extrair, categorizar e registrar transações financeiras a partir de descrições em texto e arquivos de áudio.
 
-The goal is to integrate AI capabilities without bypassing domain and use case boundaries.
+---
 
-## Code Context
+## O que o Projeto Faz
 
-The project processes voice commands to create and query financial transactions.
+* **Registro de Transações via Texto:** Processa entradas de texto sobre gastos/ganhos e categoriza automaticamente.
+* **Transcrição e Processamento de Áudio (Speech-to-Text):** Processa arquivos de áudio enviando para o modelo de IA, transcrevendo a fala e registrando a transação orçamentária.
+* **Function Calling (Tools):** Permite que o LLM execute funções reais da aplicação para persistir dados no repositório financeiro.
+* **Tratamento de Erros e Resiliência (Melhoria do Desafio):** Captura falhas de validação nos dados de entrada e erros de comunicação com a API de IA sem expor exceções brutas ao cliente.
 
-Primary flow:
+---
 
-1. Client uploads an audio file.
-2. Audio is transcribed into text.
-3. The model selects an application tool/use case.
-4. The use case persists or queries transaction data.
-5. The final response is converted to audio.
+## Melhoria Implementada
 
-## Project Structure
+Neste desafio de projeto, foi implementado um **Mecanismo Global de Tratamento de Exceções e Validação de Dados**:
 
-- `src/main/java/dio/budgeting/domain`
-  - Domain model and repository contract.
-- `src/main/java/dio/budgeting/application`
-  - Use cases used by both REST and AI tool calling.
-- `src/main/java/dio/budgeting/infrastructure`
-  - HTTP adapters, JPA adapters, and integration glue.
+1. **Validação de Parâmetros de Entrada (`spring-boot-starter-validation`):**
+   * Adicionadas anotações de validação (`@Valid`, `@NotBlank`, `@NotNull`) nos DTOs de requisição (`TransactionRequest`).
+2. **Manipulador Global de Exceções (`GlobalExceptionHandler`):**
+   * `@RestControllerAdvice` configurado para capturar erros de requisições malformadas (HTTP 400 Bad Request) com mensagens descritivas dos campos inválidos.
+   * Tratamento direcionado para erros de integração com a API da OpenAI (HTTP 401 Unauthorized para chaves inválidas e HTTP 429 para limite de cota/rate-limit excedido).
+   * Padronização das respostas de erro no DTO `ErrorResponseDTO`.
 
-## Module-Specific Topics
+---
 
-### Speech-to-text
+## Tecnologias Utilizadas
 
-- Uses `TranscriptionModel` for audio transcription.
-- Model settings are configured in `application.properties`.
+* **Java 21**
+* **Spring Boot 3.x**
+* **Spring AI** (OpenAI Chat, Speech e Transcription Models)
+* **Gradle**
+* **Jakarta Bean Validation**
 
-### Tool calling
+---
 
-- `ChatClient` registers use-case tools.
-- `@Tool` methods expose business capabilities to the model.
+## Como Executar a Aplicação
 
-### Text-to-speech
+### 1. Pré-requisitos
+* Java 21 instalado
+* Uma chave de API da OpenAI (`OPENAI_API_KEY`)
 
-- `TextToSpeechModel` produces MP3 output from final text.
-- AI endpoint returns generated audio.
+### 2. Configurar a Chave de API
+Defina a variável de ambiente no seu terminal:
 
-## Spring AI Documentation
-
-- Spring AI Reference: https://docs.spring.io/spring-ai/reference/index.html
-- ChatModel API: https://docs.spring.io/spring-ai/reference/api/chatmodel.html
-- ChatClient API: https://docs.spring.io/spring-ai/reference/api/chatclient.html
-- Tools API: https://docs.spring.io/spring-ai/reference/api/tools.html
-- Audio Transcriptions API: https://docs.spring.io/spring-ai/reference/api/audio/transcriptions.html
-- Audio Speech API: https://docs.spring.io/spring-ai/reference/api/audio/speech.html
-
-## Shared Architecture References
-
-Common architecture concepts are documented in the root README:
-
-- [DDD layers](../README.md#ddd-layered-architecture)
-- [Class vs record](../README.md#java-class-vs-java-record-in-domain-modeling)
-- [Strong typed identifiers](../README.md#strong-typed-identifiers)
-- [Repository pattern](../README.md#repository-pattern)
-- [Use cases and Clean Architecture](../README.md#use-cases-and-clean-architecture)
-- [Docker Compose support](../README.md#docker-compose-support-in-development)
-
-## How to Run
-
-Set your OpenAI API key:
-
-```bash
-export OPENAI_API_KEY="your_api_key_here"
-```
-
-Run the application and tests:
-
-```bash
-./gradlew bootRun
-./gradlew test
-```
-
-## Notes
-
-- Educational final project focused on AI plus architectural discipline.
-- External provider integration tests may require active credentials.
+**Windows (PowerShell):**
+```powershell
+$env:OPENAI_API_KEY="sua_chave_aqui"
