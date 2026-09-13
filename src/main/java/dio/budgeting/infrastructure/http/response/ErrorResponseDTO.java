@@ -1,7 +1,6 @@
 package dio.budgeting.infrastructure.http.response;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 public record ErrorResponseDTO(
